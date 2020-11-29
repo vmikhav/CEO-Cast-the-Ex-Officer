@@ -113,7 +113,7 @@ export default class BaseLevelScene extends BaseScene {
     for (i = 0; i < this.points.length; i++) {
       points = points.concat(this.points[i]);
     }
-    if (points.length > 7) {
+    if (points.length > 3) {
       //const cloud = new PointCloud('', points);
       //console.log(JSON.stringify(cloud.toJSON()));
       this.applySymbols(qDollarUniStrokeRecognizer.recognize(points, this.symbolsToIgnore));

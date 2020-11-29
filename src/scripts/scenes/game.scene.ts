@@ -263,7 +263,7 @@ export default class GameScene extends BaseLevelScene {
     const workersInWave = symbolsController.shuffle([...this.workers]).splice(0, this.waveSize);
     const workerSymbols: string[][] = [];
 
-    const timePerSymbol = Math.floor(2000 * Math.pow(0.95, gameStat.day) * Math.pow(1.1, this.waveSize));
+    const timePerSymbol = Math.floor(2000 * Math.pow(0.975, gameStat.day) * Math.pow(1.125, this.waveSize));
     const maxSymbol = gameStat.day < 3 ? 3 : (gameStat.day < 6 ? 5 : symbolList.length - 1);
     const symbolsInWave = Math.min(3 * this.waveSize + Phaser.Math.Between(Math.max(1, gameStat.day - 3), gameStat.day + 3), 5 * this.waveSize);
 
@@ -382,7 +382,7 @@ export default class GameScene extends BaseLevelScene {
       symbolsController.free();
       this.scene.restart();
     }
-    const text = 'You ' + (win ? 'win' : 'lose') + ' in ' + gameStat.day + ' days. Would you like to play again?';
+    const text = 'You ' + (win ? 'collected enough money for revenge' : 'lose') + ' in ' + gameStat.day + ' weeks. Would you like to play again?';
     this.storyPanel.show(text, buttons);
     configController.resetGameStat();
   }
