@@ -33,7 +33,7 @@ export default class PreloadScene extends BaseScene {
     }
     for (let video of loaderConfig.videos) {
       const name = video.split('.')[0];
-      this.load.video(name, 'assets/videos/' + video);
+      this.load.video(name, 'assets/videos/' + video, undefined, undefined, true);
     }
 
     this.percentText = this.make.text({
