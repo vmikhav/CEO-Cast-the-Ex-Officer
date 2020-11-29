@@ -1,0 +1,119 @@
+{"frames": [
+
+  {
+    "filename": "heart",
+    "frame": {"x":0,"y":0,"w":27,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":27,"h":32},
+    "sourceSize": {"w":27,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "^",
+    "frame": {"x":27,"y":0,"w":27,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":27,"h":32},
+    "sourceSize": {"w":27,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "-",
+    "frame": {"x":54,"y":0,"w":27,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":27,"h":32},
+    "sourceSize": {"w":27,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "vortex",
+    "frame": {"x":81,"y":0,"w":27,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":27,"h":32},
+    "sourceSize": {"w":27,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "v",
+    "frame": {"x":108,"y":0,"w":27,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":27,"h":32},
+    "sourceSize": {"w":27,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "o",
+    "frame": {"x":135,"y":0,"w":25,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":25,"h":32},
+    "sourceSize": {"w":25,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "lighting",
+    "frame": {"x":160,"y":0,"w":21,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":21,"h":32},
+    "sourceSize": {"w":21,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "|",
+    "frame": {"x":181,"y":0,"w":11,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":11,"h":32},
+    "sourceSize": {"w":11,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "<",
+    "frame": {"x":192,"y":0,"w":24,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":24,"h":32},
+    "sourceSize": {"w":24,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": ">",
+    "frame": {"x":216,"y":0,"w":24,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":24,"h":32},
+    "sourceSize": {"w":24,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "pigtail",
+    "frame": {"x":240,"y":0,"w":30,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":30,"h":32},
+    "sourceSize": {"w":30,"h":32},
+    "pivot": {"x":0,"y":0}
+  },
+  {
+    "filename": "w",
+    "frame": {"x":270,"y":0,"w":43,"h":32},
+    "rotated": false,
+    "trimmed": false,
+    "spriteSourceSize": {"x":0,"y":0,"w":43,"h":32},
+    "sourceSize": {"w":43,"h":32},
+    "pivot": {"x":0,"y":0}
+  }],
+  "meta": {
+    "app": "manual",
+    "version": "1.0",
+    "image": "unistroke-symbols.png",
+    "format": "RGBA8888",
+    "size": {"w":313,"h":32},
+    "scale": "1"
+  }
+}
