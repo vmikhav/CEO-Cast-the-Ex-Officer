@@ -219,7 +219,7 @@ export default class GameScene extends BaseLevelScene {
   }
 
   checkPurchases() {
-    for (let i = 0; i < purchases.length; i++) {
+    for (let i = 0; i < this.purchaseButtons.length; i++) {
       this.purchaseButtons[i].setVisible(
         !gameStat.purchases.includes(purchases[i].key) &&
         gameStat.money >= purchases[i].price &&
@@ -276,7 +276,7 @@ export default class GameScene extends BaseLevelScene {
       }
     }
     this.waveSize--;
-    if (!this.waveSize) {
+    if (!this.waveSize && !this.finished) {
       this.nextWave();
     }
   }
@@ -286,7 +286,9 @@ export default class GameScene extends BaseLevelScene {
       if (!this.madeMistake) {
         this.updateReputation(1);
       }
-      this.setPause(true);
+      if (!this.finished) {
+        this.setPause(true);
+      }
       return;
     }
     const wave = this.waves.shift();
@@ -396,7 +398,6 @@ export default class GameScene extends BaseLevelScene {
 
     if (pause) {
       configController.setConfig(gameStat, 'day', gameStat.day + 1);
-      console.log(gameStat.day);
       this.checkPurchases();
       this.findStory();
     } else {
@@ -414,6 +415,9 @@ export default class GameScene extends BaseLevelScene {
     this.readyButton.setVisible(false);
     soundsController.stopMusic();
     soundsController.finishSound(win ? 'win' : 'lose');
+    for (let i = 0; i < this.workers.length; i++) {
+      this.workers[i].clearSymbols();
+    }
     this.freeObjects(this.purchaseButtons);
     const buttons = [this.storyButtons[0]];
     buttons[0].setText('Restart');

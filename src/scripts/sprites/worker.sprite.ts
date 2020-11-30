@@ -97,4 +97,8 @@ export default class WorkerSprite extends Phaser.GameObjects.Container {
     this.symbolsControl.addTimeBonus(timespan);
   }
 
+  clearSymbols() {
+    this.symbolsControl.clearSymbols();
+  }
+
 }

@@ -241,4 +241,15 @@ export default class SymbolsControl extends Phaser.GameObjects.Container impleme
   hide() {
     this.hideTween.restart();
   }
+
+  clearSymbols() {
+    if (!this.symbols.length) {
+      return;
+    }
+    this.remove(this.symbols);
+    symbolsController.releaseSymbol(this.symbols);
+    this.symbols = [];
+    this.symbolsText = [];
+    this.hide();
+  }
 }
