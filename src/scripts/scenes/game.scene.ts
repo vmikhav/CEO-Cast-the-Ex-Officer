@@ -125,7 +125,6 @@ export default class GameScene extends BaseLevelScene {
     this.valuationBar = new RoundedProgressBar(this, 0, -45, 370, 48, 'green', true);
     this.valuationBar.autoColor = false;
     this.statPanel.add(this.valuationBar);
-    this.updateValuation(0);
 
     this.moneyText = new Text(this, 175, 10,  '', {fontSize: '20px', fontFamily: '"Press Start 2P"', color: 'black'});
     this.moneyText.setOrigin(1, 0);
@@ -151,6 +150,7 @@ export default class GameScene extends BaseLevelScene {
     for (let i = 0; i < gameStat.purchases.length; i++) {
       this.applyPurchase(purchases.find(p => p.key === gameStat.purchases[i]));
     }
+    this.updateValuation(0);
     this.checkPurchases();
 
     if (!gameStat.tutorialFinished) {
@@ -375,15 +375,33 @@ export default class GameScene extends BaseLevelScene {
     this.readyButton.setVisible(false);
     soundsController.stopMusic();
     soundsController.finishSound(win ? 'win' : 'lose');
+    this.freeObjects(this.purchaseButtons);
     const buttons = [this.storyButtons[0]];
     buttons[0].setText('Restart');
     buttons[0].callback = () => {
       usageController.log('replay');
+      this.workers = [];
+      this.freeObjects(this.workersPull);
+      this.freeObjects(this.reputationTags);
+      this.freeObjects(this.storyButtons);
+      for (let i = 0; i < this.purchaseMasks.length; i++) {
+        this.purchaseMasks[i].obj.destroy(true);
+      }
+      this.purchaseMasks = [];
       symbolsController.free();
+      this.finished = false;
+      this.pause = true;
       this.scene.restart();
     }
     const text = 'You ' + (win ? 'collected enough money for revenge' : 'lose') + ' in ' + gameStat.day + ' weeks. Would you like to play again?';
     this.storyPanel.show(text, buttons);
     configController.resetGameStat();
+  }
+
+  freeObjects(array: Phaser.GameObjects.GameObject[]) {
+    for (let i = 0; i < array.length; i++) {
+      array[i].destroy(true);
+    }
+    array.length = 0;
   }
 }
