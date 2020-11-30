@@ -83,7 +83,7 @@ export default class GameScene extends BaseLevelScene {
 
     for (let i = 0; i < purchases.length; i++) {
       this.purchaseButtons.push(new Button(this, this.officeLeft + purchases[i].x, this.officeTop + purchases[i].y, 50, 50, '+', 'flat_wide', 'white', {fontSize: '32px'}, () => {
-        soundsController.actionSound(this.moneySounds[Phaser.Math.Between(0, this.moneySounds.length - 1)])
+        soundsController.actionSound(this.moneySounds[Phaser.Math.Between(0, this.moneySounds.length - 1)]);
         this.applyPurchase(purchases[i]);
         this.updateMoney(-purchases[i].price);
         this.checkPurchases();
@@ -146,8 +146,8 @@ export default class GameScene extends BaseLevelScene {
     this.storyPanel = new TextPanel(this, this.view.centerX, this.view.bottom - 160, 600, 300, 'flat', 'white', true, {}, 32, {x: 20, y: 20});
     this.add.existing(this.storyPanel);
     this.storyButtons = [
-      new Button(this, 0, 0, 285, 80, '', 'flat_wide', 'white', {fontSize: '22px'}),
-      new Button(this, 0, 0, 285, 80, '', 'flat_wide', 'white', {fontSize: '22px'}),
+      new Button(this, 0, 0, 285, 80, '', 'flat_wide', 'white', {fontSize: '21px'}),
+      new Button(this, 0, 0, 285, 80, '', 'flat_wide', 'white', {fontSize: '21px'}),
     ];
     this.fixedContainers.push(this.storyPanel);
 
@@ -156,6 +156,7 @@ export default class GameScene extends BaseLevelScene {
     }
     this.updateValuation(0);
     this.checkPurchases();
+    this.findStory();
 
     if (!gameStat.tutorialFinished) {
       configController.setConfig(gameStat, 'tutorialFinished', true);
@@ -328,6 +329,9 @@ export default class GameScene extends BaseLevelScene {
       buttons.push(this.storyButtons[i]);
       buttons[i].setText(stories[id].options[i].text);
       buttons[i].callback = () => {
+        if (stories[id].options[i].money) {
+          soundsController.actionSound(this.moneySounds[Phaser.Math.Between(0, this.moneySounds.length - 1)]);
+        }
         this.updateMoney(stories[id].options[i].money);
         this.updateValuation(stories[id].options[i].valuation);
         this.updateReputation(stories[id].options[i].reputation);
@@ -345,10 +349,13 @@ export default class GameScene extends BaseLevelScene {
     this.storyPanel.hide(500);
     this.ignoreInput = this.pause;
     this.time.addEvent({
-      delay: 500,
+      delay: 600,
       callback: () => {
         this.storyShowed = false;
         this.ignoreUpdate = this.pause;
+        if (this.pause) {
+          this.findStory();
+        }
       }
     });
   }
@@ -389,7 +396,9 @@ export default class GameScene extends BaseLevelScene {
 
     if (pause) {
       configController.setConfig(gameStat, 'day', gameStat.day + 1);
+      console.log(gameStat.day);
       this.checkPurchases();
+      this.findStory();
     } else {
       for (let i = 0; i < this.purchaseButtons.length; i++) {
         this.purchaseButtons[i].setVisible(false);
@@ -435,5 +444,50 @@ export default class GameScene extends BaseLevelScene {
       array[i].destroy(true);
     }
     array.length = 0;
+  }
+
+  findStory() {
+    for (let i = 2; i < stories.length; i++) {
+      if (this.calcStoryConditions(i)) {
+        this.showStory(i);
+        break;
+      }
+    }
+  }
+
+  calcStoryConditions(id) {
+    const story = stories[id];
+    let result = !gameStat.answers.hasOwnProperty(id);
+    if (result) {
+      result = ['day', 'money', 'valuation'].every(i => (!story.conditions.hasOwnProperty(i) || story.conditions[i] === gameStat[i]));
+      if (result) {
+        result = !story.conditions.hasOwnProperty('answer') || this.calcAnswerConditions(story.conditions.answer);
+      }
+    }
+    return result;
+  }
+
+  calcAnswerConditions(rules) {
+    const data: boolean[] = [];
+    let i, parts, r, l;
+    let rule: string;
+    for (i = 0; i < rules.length; i++) {
+      rule = rules[i];
+      if (rule == 'and') {
+        r = data.pop();
+        l = data.pop();
+        // @ts-ignore
+        data.push(r && l);
+      } else if (rule == 'or') {
+        r = data.pop();
+        l = data.pop();
+        // @ts-ignore
+        data.push(r || l);
+      } else {
+        parts = rule.split('.');
+        data.push(gameStat.answers[parts[0]] === parseInt(parts[1]));
+      }
+    }
+    return data[0] || false;
   }
 }
