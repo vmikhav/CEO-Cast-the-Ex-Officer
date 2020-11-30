@@ -45,6 +45,7 @@ class SymbolsController {
   }
 
   applySymbols(controls: SymbolsControlInterface[], symbols: any[]) {
+    //console.log(symbols[0].name);
     //console.log([...symbols]);
     const result = {symbol: '', score: 0};
     if (!symbols.length) {
