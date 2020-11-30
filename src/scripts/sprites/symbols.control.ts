@@ -16,11 +16,13 @@ interface ProgressbarSettings {
 export default class SymbolsControl extends Phaser.GameObjects.Container implements SymbolsControlInterface {
   scene: BaseScene;
   symbols: SymbolSprite[] = [];
+  symbolsText: string[] = [];
   progressBar: BaseProgressBar;
   progressDelta = 0;
   symbolMargin = 2;
   symbolScale = 1.5;
   active = false;
+  viewLimit: number;
 
   completeCallback;
   timeoutCallback;
@@ -69,26 +71,34 @@ export default class SymbolsControl extends Phaser.GameObjects.Container impleme
           callback: () => {
             this.progressBar.autoColor = true;
             this.hide();
-            this.timeoutCallback(this.symbols.length);
+            this.timeoutCallback(this.symbolsText.length);
           }
         })
       }
     }
   }
 
-  setSymbols(symbols: string[], timespan: number|null = null) {
+  setSymbols(symbols: string[], timespan: number|null = null, viewLimit = -1) {
     this.hideTween.stop(0);
+    if (viewLimit === -1) {
+      viewLimit = Phaser.Math.Between(3, 5);
+    }
     let i, width = 0;
+    this.symbolsText = [...symbols];
+    if (this.symbolsText.length == viewLimit + 1) {
+      viewLimit == 5 ? viewLimit-- : viewLimit++;
+    }
+    this.viewLimit = Math.min(this.symbolsText.length, viewLimit <= 0 ? 200 : viewLimit);
     this.remove(this.symbols);
     symbolsController.releaseSymbol(this.symbols);
     this.symbols = [];
-    for (i = 0; i < symbols.length; i++) {
-      this.symbols.push(symbolsController.getSymbol(this, symbols[i]));
+    for (i = 0; i < this.viewLimit; i++) {
+      this.symbols.push(symbolsController.getSymbol(this, this.symbolsText[i]));
       width += this.symbols[i].width * this.symbolScale + this.symbolMargin;
     }
     let x =  -Math.ceil((width - this.symbolMargin) / 2);
     this.add(this.symbols);
-    for (i = 0; i < symbols.length; i++) {
+    for (i = 0; i < this.viewLimit; i++) {
       this.symbols[i].setPosition(x, -15);
       x += this.symbols[i].width * this.symbolScale  + this.symbolMargin;
       this.symbols[i].setAlpha(0);
@@ -123,8 +133,8 @@ export default class SymbolsControl extends Phaser.GameObjects.Container impleme
       return 0;
     }
     let i, j = 0;
-    for (i = 0; i < this.symbols.length; i++) {
-      if (this.symbols[i].symbol === symbol) {
+    for (i = 0; i < this.symbolsText.length; i++) {
+      if (this.symbolsText[i] === symbol) {
         j++;
         if (onlyOne) {
           break;
@@ -143,9 +153,14 @@ export default class SymbolsControl extends Phaser.GameObjects.Container impleme
     }
     let i;
     const removedSymbols: SymbolSprite[] = [];
-    for (i = 0; i < this.symbols.length; i++) {
-      if (this.symbols[i].symbol === symbol) {
-        removedSymbols.push(this.symbols.splice(i, 1)[0] as SymbolSprite);
+    let removedCount = 0;
+    for (i = 0; i < this.symbolsText.length; i++) {
+      if (this.symbolsText[i] === symbol) {
+        if (i < this.symbols.length) {
+          removedSymbols.push(this.symbols.splice(i, 1)[0] as SymbolSprite);
+        }
+        this.symbolsText.splice(i, 1);
+        removedCount++;
         i--;
         if (onlyOne) {
           break;
@@ -165,37 +180,58 @@ export default class SymbolsControl extends Phaser.GameObjects.Container impleme
           this.remove(removedSymbols);
           symbolsController.releaseSymbol(removedSymbols);
           let i, width = 0;
+          if (!this.symbols.length) {
+            while (this.symbols.length < this.viewLimit && this.symbols.length < this.symbolsText.length) {
+              i = this.symbols.length;
+              this.symbols.push(symbolsController.getSymbol(this, this.symbolsText[i]));
+              this.symbols[i].setPosition(500, -15);
+              this.symbols[i].setAlpha(0);
+              this.symbols[i].setDisplaySize(this.symbols[i].width * this.symbolScale, this.symbols[i].height * this.symbolScale);
+              this.add(this.symbols[i]);
+            }
+          }
           for (i = 0; i < this.symbols.length; i++) {
             width += this.symbols[i].width * this.symbolScale + this.symbolMargin;
           }
           let x = -Math.ceil((width - this.symbolMargin) / 2);
           for (i = 0; i < this.symbols.length; i++) {
-            this.scene.tweens.add({
-              targets: this.symbols[i],
-              x,
-              ease: 'Sine.easeOut',
-              duration: 100,
-            });
+            if (this.symbols[i].x === 500) {
+              this.symbols[i].setPosition(x, -15);
+              this.scene.tweens.add({
+                targets: this.symbols[i],
+                alpha: 1,
+                ease: 'Sine.easeOut',
+                duration: 350,
+              });
+
+            } else {
+              this.scene.tweens.add({
+                targets: this.symbols[i],
+                x,
+                ease: 'Sine.easeOut',
+                duration: 100,
+              });
+            }
             x += this.symbols[i].width * this.symbolScale + this.symbolMargin;
           }
         }
       });
-      if (!this.symbols.length) {
-        this.active = false;
-        this.progressBar.setColor('green');
-        this.progressBar.autoColor = false;
-        this.progressBar.setProgress(1);
-        this.scene.time.addEvent({
-          delay: 500,
-          callback: () => {
-            this.progressBar.autoColor = true;
-            this.hide();
-            this.completeCallback();
-          }
-        })
-      }
     }
-    return removedSymbols.length;
+    if (!this.symbolsText.length) {
+      this.active = false;
+      this.progressBar.setColor('green');
+      this.progressBar.autoColor = false;
+      this.progressBar.setProgress(1);
+      this.scene.time.addEvent({
+        delay: 500,
+        callback: () => {
+          this.progressBar.autoColor = true;
+          this.hide();
+          this.completeCallback();
+        }
+      })
+    }
+    return removedCount;
   }
 
   addTimeBonus(timespan) {

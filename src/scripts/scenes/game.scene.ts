@@ -112,6 +112,7 @@ export default class GameScene extends BaseLevelScene {
     this.muteButton = new ImageButton(this, 50, 50, 80, 80, 'flat_wide', 'white', soundConfig.soundsMuted ?
       'musicOff' : 'musicOn', () => this.changeMuteState(!soundConfig.soundsMuted));
     this.add.existing(this.muteButton);
+    this.fixedContainers.push(this.muteButton);
 
     for (let i = 0; i < gameConfig.maxReputation; i++) {
       this.reputationTags.push(new Image(this, this.view.right - 50 * i - 10, this.view.top + 110, 'ui', 208));
@@ -125,6 +126,7 @@ export default class GameScene extends BaseLevelScene {
     this.valuationBar = new RoundedProgressBar(this, 0, -45, 370, 48, 'green', true);
     this.valuationBar.autoColor = false;
     this.statPanel.add(this.valuationBar);
+    this.fixedContainers.push(this.statPanel);
 
     this.moneyText = new Text(this, 175, 10,  '', {fontSize: '20px', fontFamily: '"Press Start 2P"', color: 'black'});
     this.moneyText.setOrigin(1, 0);
@@ -139,6 +141,7 @@ export default class GameScene extends BaseLevelScene {
     this.ignoreInput = true;
     this.pause = true;
     this.add.existing(this.readyButton);
+    this.fixedContainers.push(this.readyButton);
 
     this.storyPanel = new TextPanel(this, this.view.centerX, this.view.bottom - 160, 600, 300, 'flat', 'white', true, {}, 32, {x: 20, y: 20});
     this.add.existing(this.storyPanel);
@@ -146,6 +149,7 @@ export default class GameScene extends BaseLevelScene {
       new Button(this, 0, 0, 285, 80, '', 'flat_wide', 'white', {fontSize: '22px'}),
       new Button(this, 0, 0, 285, 80, '', 'flat_wide', 'white', {fontSize: '22px'}),
     ];
+    this.fixedContainers.push(this.storyPanel);
 
     for (let i = 0; i < gameStat.purchases.length; i++) {
       this.applyPurchase(purchases.find(p => p.key === gameStat.purchases[i]));
@@ -165,6 +169,32 @@ export default class GameScene extends BaseLevelScene {
     super.update(time, delta);
     if (!this.ignoreUpdate) {
       this.children.each(i => i.update(time, delta));
+    }
+  }
+
+  onResize() {
+    super.onResize();
+    this.initTouchInput();
+    this.muteButton?.setPosition(50, 50);
+    this.statPanel?.setPosition(this.view.right - 210, this.view.top + 60);
+    this.readyButton?.setPosition(this.view.centerX, this.view.bottom - 50);
+    this.storyPanel?.setPosition(this.view.centerX, this.view.bottom - 160);
+    let i;
+    for (i = 0; i < gameConfig.maxReputation; i++) {
+      this.reputationTags[i].setPosition(this.view.right - 50 * i - 10, this.view.top + 110);
+    }
+    this.officeImage.setPosition(this.view.centerX, this.view.centerY);
+    this.officeLeft = this.view.centerX - Math.ceil(this.officeImage.width / 2);
+    this.officeTop = this.view.centerY - Math.ceil(this.officeImage.height / 2);
+
+    for (let i = 0; i < purchaseMasks.length; i++) {
+      this.purchaseMasks[i].obj.setPosition(this.officeLeft + purchaseMasks[i].x, this.officeTop + purchaseMasks[i].y);
+    }
+    for (let i = 0; i < purchases.length; i++) {
+      this.purchaseButtons[i].setPosition(this.officeLeft + purchases[i].x, this.officeTop + purchases[i].y);
+    }
+    for (i = 0; i < workerPositions.length; i++) {
+      this.workersPull[i].setPosition(this.officeLeft + workerPositions[i].x, this.officeTop + workerPositions[i].y);
     }
   }
 
@@ -259,13 +289,13 @@ export default class GameScene extends BaseLevelScene {
       return;
     }
     const wave = this.waves.shift();
-    this.waveSize = Phaser.Math.Between(Math.max(Math.floor(2 * this.workers.length / 3), 1), this.workers.length);
-    const workersInWave = symbolsController.shuffle([...this.workers]).splice(0, this.waveSize);
+    this.waveSize = this.workers.length;
+    const workersInWave = symbolsController.shuffle([...this.workers]);
     const workerSymbols: string[][] = [];
 
-    const timePerSymbol = Math.floor(2000 * Math.pow(0.975, gameStat.day) * Math.pow(1.125, this.waveSize));
+    const timePerSymbol = Math.floor(1200 * Math.pow(0.975, gameStat.day) * Math.pow(1.25, this.workers.length));
     const maxSymbol = gameStat.day < 3 ? 3 : (gameStat.day < 6 ? 5 : symbolList.length - 1);
-    const symbolsInWave = Math.min(3 * this.waveSize + Phaser.Math.Between(Math.max(1, gameStat.day - 3), gameStat.day + 3), 5 * this.waveSize);
+    const symbolsInWave = Math.min((3 + Phaser.Math.Between(Math.max(1, gameStat.day - 3), gameStat.day + 3)) * Math.pow(0.95, this.workers.length), 6 * this.waveSize);
 
     let i, j;
     for (i = 0; i < workersInWave.length; i++) {
@@ -277,7 +307,7 @@ export default class GameScene extends BaseLevelScene {
     }
     for (i = 0; i < workersInWave.length; i++) {
       if (workerSymbols.length) {
-        workersInWave[i].setSymbols(workerSymbols[i], timePerSymbol * workerSymbols[i].length);
+        workersInWave[i].setSymbols(workerSymbols[i], 1000 + timePerSymbol * workerSymbols[i].length);
       }
     }
   }
@@ -388,6 +418,8 @@ export default class GameScene extends BaseLevelScene {
         this.purchaseMasks[i].obj.destroy(true);
       }
       this.purchaseMasks = [];
+      this.fixedContainers.length = 0;
+      this.fixedElements.length = 0;
       symbolsController.free();
       this.finished = false;
       this.pause = true;

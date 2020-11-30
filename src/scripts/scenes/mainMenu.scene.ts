@@ -11,14 +11,18 @@ export default class MainMenuScene extends BaseScene {
   banner: Image;
 
   canStartGame = true;
+  canPlayVideo = false;
 
   constructor() {
-    super({ key: 'MainMenuScene' })
+    super({ key: 'MainMenuScene' });
   }
 
   create() {
     this.fadeIn(200);
     this.getWorldView();
+
+    const video = document.createElement('video');
+    this.canPlayVideo = video.canPlayType('video/webm; codecs="vp8, vorbis"') === 'probably';
 
     this.banner = this.add.image(0, 0, 'banner_ceo');
     this.fixedElements.push(this.banner);
@@ -87,7 +91,7 @@ export default class MainMenuScene extends BaseScene {
     this.canStartGame = false;
     if (gameStat.tutorialFinished) {
       this.fadeOutScene('GameScene', 750);
-    } else {
+    } else if (this.canPlayVideo) {
       this.cameras.main.fadeOut(500);
       this.time.addEvent({
         delay: 500,
@@ -112,6 +116,8 @@ export default class MainMenuScene extends BaseScene {
           this.fadeOutScene('IntroScene', 750);
         }
       });
+    } else {
+      this.fadeOutScene('IntroScene', 750);
     }
   }
 }

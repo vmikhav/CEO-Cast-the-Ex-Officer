@@ -82,14 +82,19 @@ class Game extends Phaser.Game {
       this.canvas.style.marginTop = `${Math.floor((h - newHeight * scale) / 2)}px`;
       this.canvas.style.marginLeft = `${Math.floor((w - newWidth * scale) / 2)}px`;
 
-      if (h > 20) {
-        if (scene) {
-          scene.onResize();
-        }
+      if (h > 20 && scene) {
+        scene.onResize();
       }
     };
+    let resizeTimeout;
     window.addEventListener('resize', () => {
-      resize();
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        resize();
+        setTimeout(() => {
+          resize();
+        }, 500);
+      }, 50);
     });
     document.addEventListener('visibilitychange', () => {
       if (this.scene.isVisible('GameScene')) {
@@ -98,6 +103,16 @@ class Game extends Phaser.Game {
         } else {
           this.scene.pause('GameScene');
         }
+      }
+    });
+    window.addEventListener('blur', () => {
+      if (this.scene.isVisible('GameScene')) {
+        this.scene.pause('GameScene');
+      }
+    });
+    window.addEventListener('focus', () => {
+      if (this.scene.isVisible('GameScene')) {
+        this.scene.resume('GameScene');
       }
     });
     setTimeout(() => {
