@@ -21,8 +21,17 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   getWorldView() {
-    const camera = this.cameras.main;
-    this.view = {top: 0, left: 0, bottom: camera.height, right: camera.width, centerX: camera.width / 2, centerY: camera.height / 2};
+    const camera = this.cameras?.main;
+    if (camera) {
+      this.view = {
+        top: 0,
+        left: 0,
+        bottom: camera.height,
+        right: camera.width,
+        centerX: camera.width / 2,
+        centerY: camera.height / 2
+      };
+    }
   }
 
   onResize() {

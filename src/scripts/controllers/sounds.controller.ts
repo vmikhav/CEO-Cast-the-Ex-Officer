@@ -14,8 +14,8 @@ class SoundsController {
 
   }
 
-  setGame() {
-    this.soundManager = window['game'].sound;
+  setGame(game) {
+    this.soundManager = game.sound;
 
     this.actionSounds = {};
     this.finishSounds = {};

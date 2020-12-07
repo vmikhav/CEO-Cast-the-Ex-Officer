@@ -53,7 +53,7 @@ export default class GameScene extends BaseLevelScene {
   readyButton: Button;
 
   constructor() {
-    super({ key: 'GameScene' })
+    super({ key: 'GameScene' });
   }
 
   create() {
