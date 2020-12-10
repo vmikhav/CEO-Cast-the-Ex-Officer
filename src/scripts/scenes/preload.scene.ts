@@ -12,14 +12,34 @@ export default class PreloadScene extends BaseScene {
   }
 
   preload () {
-    // @ts-ignore
     this.game.resize();
     setTimeout(() => {
-      // @ts-ignore
       this.game.resize();
     }, 250);
     this.getWorldView();
     document.getElementById('spinner')?.remove();
+    this.percentText = this.make.text({
+      x: this.view.centerX,
+      y: this.view.centerY,
+      text: '0%',
+      style: {
+        align: 'center',
+        fontFamily: '"Press Start 2P"',
+        fontSize: '24px',
+        fill: '#ffffff'
+      }
+    });
+    this.percentText.setOrigin(0.5);
+    this.load.on('progress', (value) => {
+      this.percentText.setText(parseInt((value * 100).toString()) + '%');
+    });
+
+    if (!game) {
+      this.percentText.setText('Cannot run game\n\nin Private mode\n\nin Chrome-based browser ;(');
+      return;
+    }
+
+
     this.load.spritesheet('ui', 'assets/images/UIpackSheet.png', {frameHeight: 16, frameWidth: 16, margin: 1, spacing: 4});
     this.load.spritesheet('workers', 'assets/images/workers.png', {frameHeight: 64, frameWidth: 32, margin: 1, spacing: 2});
     this.load.atlas('unistrokeSymbols', 'assets/images/unistroke_symbols.png', 'assets/images/unistroke_symbols.json');
@@ -43,30 +63,9 @@ export default class PreloadScene extends BaseScene {
       const name = video.split('.')[0];
       this.load.video(name, 'assets/videos/' + video, undefined, undefined, true);
     }
-
-    this.percentText = this.make.text({
-      x: this.view.centerX,
-      y: this.view.centerY,
-      text: '0%',
-      style: {
-        align: 'center',
-        fontFamily: '"Press Start 2P"',
-        fontSize: '24px',
-        fill: '#ffffff'
-      }
-    });
-    this.percentText.setOrigin(0.5);
-    this.load.on('progress', (value) => {
-      this.percentText.setText(parseInt((value * 100).toString()) + '%');
-    });
   }
 
   create () {
-    if (!game) {
-      this.percentText.setText('Cannot run game\n\nin Private mode\n\nin Chrome-based browser ;(');
-      return;
-    }
-
     soundsController.setGame(game);
 
     this.percentText.destroy();

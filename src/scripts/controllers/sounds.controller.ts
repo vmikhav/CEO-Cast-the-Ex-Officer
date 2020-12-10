@@ -41,7 +41,9 @@ class SoundsController {
     if (soundConfig.music && !soundConfig.music.isPaused) {
       soundConfig.music.pause();
     }
-    configController.setConfig(soundConfig, 'soundsMuted', true);
+    if (!this.temporaryMute) {
+      configController.setConfig(soundConfig, 'soundsMuted', true);
+    }
   }
 
   unmute(temporary = false) {

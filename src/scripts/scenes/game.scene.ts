@@ -189,13 +189,13 @@ export default class GameScene extends BaseLevelScene {
     this.officeTop = this.view.centerY - Math.ceil(this.officeImage.height / 2);
 
     for (let i = 0; i < purchaseMasks.length; i++) {
-      this.purchaseMasks[i].obj.setPosition(this.officeLeft + purchaseMasks[i].x, this.officeTop + purchaseMasks[i].y);
+      this.purchaseMasks[i]?.obj.setPosition(this.officeLeft + purchaseMasks[i].x, this.officeTop + purchaseMasks[i].y);
     }
     for (let i = 0; i < purchases.length; i++) {
-      this.purchaseButtons[i].setPosition(this.officeLeft + purchases[i].x, this.officeTop + purchases[i].y);
+      this.purchaseButtons[i]?.setPosition(this.officeLeft + purchases[i].x, this.officeTop + purchases[i].y);
     }
     for (i = 0; i < workerPositions.length; i++) {
-      this.workersPull[i].setPosition(this.officeLeft + workerPositions[i].x, this.officeTop + workerPositions[i].y);
+      this.workersPull[i]?.setPosition(this.officeLeft + workerPositions[i].x, this.officeTop + workerPositions[i].y);
     }
   }
 

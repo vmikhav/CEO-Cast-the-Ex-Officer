@@ -14,7 +14,11 @@ const config = Object.assign(phaserConfig, {
   scene: [BootScene, PreloadScene, MainMenuScene, IntroScene, GameScene]
 });
 
-class Game extends Phaser.Game {
+export class Game extends Phaser.Game {
+
+  scenePaused: Record<string, boolean> = {};
+  paused = false;
+
   constructor () {
     super(config);
 
@@ -37,12 +41,10 @@ class Game extends Phaser.Game {
       }, 50);
     });
     document.addEventListener('visibilitychange', () => {
-      if (this.scene.isVisible('GameScene')) {
-        if (document.visibilityState === 'visible') {
-          this.scene.resume('GameScene');
-        } else {
-          this.scene.pause('GameScene');
-        }
+      if (document.visibilityState === 'visible') {
+        this.resume();
+      } else {
+        this.pause();
       }
     });
     window.addEventListener('blur', () => {
@@ -69,12 +71,10 @@ class Game extends Phaser.Game {
     const scenes = (this.scene.getScenes(true) as BaseScene[]) || [];
     const scene = scenes[0] || null;
     if (h <= 20) {
-      soundsController.mute(true);
-      scene?.scene.pause();
+      this.pause();
       return;
     } else {
-      soundsController.unmute(true);
-      scene?.scene.resume();
+      this.resume();
     }
 
     const scaleMode = 'FIT';
@@ -122,6 +122,37 @@ class Game extends Phaser.Game {
 
     if (h > 20) {
       scenes.forEach(s => s.onResize());
+    }
+  }
+
+  pause() {
+    if (this.paused) {
+      return;
+    }
+    this.paused = true;
+    this.scenePaused = {};
+    soundsController.mute(true);
+    const scenes = this.scene.getScenes(true) as BaseScene[];
+    let i;
+    for (i = 0; i < scenes.length; i++) {
+      this.scenePaused[scenes[i].scene.key] = scenes[i].scene.isPaused();
+      scenes[i].scene.pause();
+    }
+  }
+
+  resume() {
+    if (!this.paused) {
+      return;
+    }
+    this.paused = false;
+    soundsController.unmute(true);
+    const scenes = this.scene.getScenes(true) as BaseScene[];
+    let i;
+    for (i = 0; i < scenes.length; i++) {
+      if (!this.scenePaused[scenes[i].scene.key]) {
+        scenes[i].scene.resume();
+      }
+      scenes[i].onResume();
     }
   }
 }

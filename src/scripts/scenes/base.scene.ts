@@ -1,4 +1,5 @@
 import Phaser from "phaser";
+import { Game } from '../game';
 
 interface WorldView {
   top: number;
@@ -10,6 +11,8 @@ interface WorldView {
 }
 
 export default class BaseScene extends Phaser.Scene {
+  game: Game;
+
   fpsText: Phaser.GameObjects.Text;
   fixedElements: Phaser.GameObjects.Components.ScrollFactor[] = [];
   fixedContainers: Phaser.GameObjects.Container[] = [];
@@ -43,6 +46,10 @@ export default class BaseScene extends Phaser.Scene {
     for (i = 0; i < this.fixedContainers.length; i++) {
       if (this.fixedContainers[i]) {this.fixedContainers[i].setScrollFactor(0, 0, true);}
     }
+  }
+
+  onResume() {
+
   }
 
   fadeIn(duration) {

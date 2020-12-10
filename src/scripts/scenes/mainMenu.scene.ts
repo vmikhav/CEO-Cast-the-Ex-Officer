@@ -2,6 +2,7 @@ import BaseScene from './base.scene';
 import { Button } from '../components';
 import { gameConfig, gameStat } from '../config';
 import Image = Phaser.GameObjects.Image;
+import Video = Phaser.GameObjects.Video;
 import { configController, usageController } from '../controllers';
 
 export default class MainMenuScene extends BaseScene {
@@ -12,6 +13,7 @@ export default class MainMenuScene extends BaseScene {
 
   canStartGame = true;
   canPlayVideo = false;
+  video: Video;
 
   constructor() {
     super({ key: 'MainMenuScene' });
@@ -71,6 +73,12 @@ export default class MainMenuScene extends BaseScene {
     }
   }
 
+  onResume() {
+    if (this.video) {
+      this.video.play();
+    }
+  }
+
 
   update() {
 
@@ -100,12 +108,12 @@ export default class MainMenuScene extends BaseScene {
           if (this.resetButton) {
             this.resetButton.setVisible(false);
           }
-          const video = this.add.video(this.view.centerX, this.view.centerY, 'boss');
+          this.video = this.add.video(this.view.centerX, this.view.centerY, 'boss');
           this.cameras.main.fadeIn(500);
           this.time.addEvent({
             delay: 500,
             callback: () => {
-              video.play();
+              this.video.play();
             }
           });
         }
